@@ -1,8 +1,28 @@
 <?php 
 
+$key = "testsifry";
+
+function Encrypted($text) {
+ 
+    $string = $text;
+    $pass = $key;
+    $method = 'aes128';
+    return openssl_encrypt($string, $method, $pass);
+
+}
+
+function Decrypted($text) {
+    $string = $text;
+    $pass = $key;
+    $method = 'aes128';
+    return openssl_decrypt($string, $method, $pass);
+}
+
+
 if ($_COOKIE["login"] !== "" && $_COOKIE["login"] !== null && $_COOKIE["token"] !== "" && $_COOKIE["token"] !== null) {
     $login = $_COOKIE["login"];
     $json_data = file_get_contents('data/logins.json');
+    $json_data = Decrypted($json_data);
     $decoded = json_decode($json_data, true);
     //echo "debug1";
 
@@ -28,6 +48,7 @@ if ($logged == 0) {
 }
 
 $json_data = file_get_contents('data/tournaments.json');
+$json_data = Decrypted($json_data);
 $decoded = json_decode($json_data, true);
 $tid = $_GET["tid"];
 

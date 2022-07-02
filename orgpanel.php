@@ -1,6 +1,24 @@
 <?php 
 error_reporting(0);
 
+$key = "testsifry";
+
+function Encrypted($text) {
+ 
+    $string = $text;
+    $pass = $key;
+    $method = 'aes128';
+    return openssl_encrypt($string, $method, $pass);
+
+}
+
+function Decrypted($text) {
+    $string = $text;
+    $pass = $key;
+    $method = 'aes128';
+    return openssl_decrypt($string, $method, $pass);
+}
+
 function print_var_name($var) {
     foreach($GLOBALS as $var_name => $value) {
         if ($value === $var) {
@@ -14,6 +32,7 @@ function print_var_name($var) {
 if ($_COOKIE["login"] !== "" && $_COOKIE["login"] !== null && $_COOKIE["token"] !== "" && $_COOKIE["token"] !== null) {
     $login = $_COOKIE["login"];
     $json_data = file_get_contents('data/logins.json');
+    $json_data = Decrypted($json_data);
     $decoded = json_decode($json_data, true);
     //echo "debug1";
 
@@ -40,6 +59,7 @@ if ($logged == 0) {
 
 $login = $_COOKIE["login"];
 $json_data = file_get_contents('data/logins.json');
+$json_data = Decrypted($json_data);
 $decoded = json_decode($json_data, true);
 $userdata = $decoded[$login];
 
@@ -55,6 +75,7 @@ if($_POST["tournamentid"] !== "" and $_POST["tournamentid"] !== null) {
     $tournamentId = str_replace(" ", "_", $tournamentId);
 
     $json_data = file_get_contents('data/tournaments.json');
+    $json_data = Decrypted($json_data);
     $decoded = json_decode($json_data, true);
     $limit = $_POST["limit"];
 
@@ -63,6 +84,7 @@ if($_POST["tournamentid"] !== "" and $_POST["tournamentid"] !== null) {
     $decoded[$tournamentId] = array("id" => $tournamentId, "limit" => $limit, "organizer" => $login, "players" => array());
     $finalJson = json_encode($decoded);
     $myfile = fopen("data/tournaments.json", "w") or die("Unable to open file!");
+    $finalJson = Encrypted($finalJson);
     fwrite($myfile, $finalJson);
     fclose($myfile);
     echo "<p style='background-color: green'> Turnaj s id $tournamentId byl vytvořen</p>";
@@ -131,6 +153,8 @@ table, th, td {
     <?php 
         
         $json_data = file_get_contents('data/tournaments.json');
+        $json_data = Decrypted($json_data);
+
         $decoded = json_decode($json_data, true);
 
         foreach($decoded as $index) {

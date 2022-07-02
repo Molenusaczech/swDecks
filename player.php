@@ -1,5 +1,23 @@
 <?php 
 
+$key = "testsifry";
+
+function Encrypted($text) {
+ 
+    $string = $text;
+    $pass = $key;
+    $method = 'aes128';
+    return openssl_encrypt($string, $method, $pass);
+
+}
+
+function Decrypted($text) {
+    $string = $text;
+    $pass = $key;
+    $method = 'aes128';
+    return openssl_decrypt($string, $method, $pass);
+}
+
 function apiGet($url) {
 
   $curl = curl_init($url);
@@ -13,7 +31,7 @@ function apiGet($url) {
   $resp = curl_exec($curl);
   curl_close($curl);
   $decoded = json_decode($resp);
-  return $decoded;
+  return Decrypted($decoded);
   
 }
 
@@ -30,6 +48,7 @@ $weapon6 = "";
 if ($_COOKIE["login"] !== "" && $_COOKIE["login"] !== null && $_COOKIE["token"] !== "" && $_COOKIE["token"] !== null) {
     $login = $_COOKIE["login"];
     $json_data = file_get_contents('data/logins.json');
+    $json_data = Decrypted($json_data);
     $decoded = json_decode($json_data, true);
     //echo "debug1";
 
@@ -61,6 +80,7 @@ if ($logged == 0) {
 //echo "turnaj: $tid";
 
 $json_data = file_get_contents('data/tournaments.json');
+$json_data = Decrypted($json_data);
 $decoded = json_decode($json_data, true);
 
 if (!isset($decoded[$tid])) {
@@ -81,11 +101,13 @@ if ($_POST["hero"] !== "" and $_POST["hero"] !== null && $_POST["weapon1"] !== "
   $user = $_COOKIE["login"];
 
   $json_data = file_get_contents('data/tournaments.json');
+  $json_data = Decrypted($json_data);
   $decoded = json_decode($json_data, true);
   $tournamentData = $decoded[$_POST["tid"]];
   $limit = $tournamentData["limit"];
 
   $json_data = file_get_contents('data/tournaments.json');
+  $json_data = Decrypted($json_data);
   $decoded = json_decode($json_data, true);
   $tournamentData = $decoded[$_GET["tid"]];
   $limit = $tournamentData["limit"];
@@ -95,6 +117,7 @@ if ($_POST["hero"] !== "" and $_POST["hero"] !== null && $_POST["weapon1"] !== "
   array_push($heroes, "");
 
   $json_data = file_get_contents('data/tournaments.json');
+  $json_data = Decrypted($json_data);
   $decoded = json_decode($json_data, true);
   $tournamentData = $decoded[$_GET["tid"]];
   $limit = $tournamentData["limit"];
@@ -108,6 +131,7 @@ if ($_POST["hero"] !== "" and $_POST["hero"] !== null && $_POST["weapon1"] !== "
     // legal deck
     $deck = array($user, $hero, $weapon1, $weapon2, $weapon3, $weapon4, $weapon5, $weapon6);
     $json_data = file_get_contents('data/tournaments.json');
+    $json_data = Decrypted($json_data);
     $decoded = json_decode($json_data, true);
     //$decoded->{$tid}->players->{$user} = $deck;
     //$encoded = json_encode($decoded);
@@ -127,6 +151,7 @@ if ($_POST["hero"] !== "" and $_POST["hero"] !== null && $_POST["weapon1"] !== "
     //$decoded[$tid] = $tournamentData;
 
     $encoded = json_encode($decoded);
+    $encoded = Encrypted($encoded);
     $myfile = fopen("data/tournaments.json", "w") or die("Unable to open file!");
     fwrite($myfile, $encoded);
     fclose($myfile);
@@ -237,7 +262,7 @@ $weapon5 = $temp2[0];
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Odevzdání balíčku</title>
 
 <style>
 
@@ -308,6 +333,7 @@ form {
     <?php 
 
     $json_data = file_get_contents('data/tournaments.json');
+    $json_data = Decrypted($json_data);
     $decoded = json_decode($json_data, true);
     $tournamentData = $decoded[$_GET["tid"]];
     $limit = $tournamentData["limit"];
@@ -315,11 +341,13 @@ form {
     $heroes = file_get_contents('heroes/'.$limit.'.json');
 
     $json_data = file_get_contents('data/tournaments.json');
+    $json_data = Decrypted($json_data);
     $decoded = json_decode($json_data, true);
     $tournamentData = $decoded[$_GET["tid"]];
     $limit = $tournamentData["limit"];
 
     $weapons = file_get_contents('weapons/'.$limit.'.json');
+    //echo "limit: ".$limit;
     //$decoded = json_decode($json_data, true);
 
     ECHO <<<END

@@ -1,5 +1,22 @@
 <?php 
 error_reporting(0);
+$key = "testsifry";
+
+function Encrypted($text) {
+ 
+    $string = $text;
+    $pass = $key;
+    $method = 'aes128';
+    return openssl_encrypt($string, $method, $pass);
+
+}
+
+function Decrypted($text) {
+    $string = $text;
+    $pass = $key;
+    $method = 'aes128';
+    return openssl_decrypt($string, $method, $pass);
+}
 
 function generateRandomString($length = 10) {
     $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -21,6 +38,7 @@ if ($_POST["tid"] !== "" && $_POST["tid"] !== null) {
 if ($_COOKIE["login"] !== "" && $_COOKIE["login"] !== null && $_COOKIE["token"] !== "" && $_COOKIE["token"] !== null) {
     $login = $_COOKIE["login"];
     $json_data = file_get_contents('data/logins.json');
+    $json_data = Decrypted($json_data);
     $decoded = json_decode($json_data, true);
     //echo "debug1";
 
@@ -87,6 +105,7 @@ if($_POST["login"] !== "" && $_POST["password"] !== "" && $_POST["login"] !== nu
 
 if ($authed == 1) {
     $json_data = file_get_contents('data/logins.json');
+    $json_data = Decrypted($json_data);
     $decoded = json_decode($json_data, true);
     
     
@@ -102,6 +121,7 @@ if ($authed == 1) {
         $decoded[$login] = array("token" => generateRandomString(32), "organizer" => false, "admin" => false);
         $finalJson = json_encode($decoded);
         $myfile = fopen("data/logins.json", "w") or die("Unable to open file!");
+        $finalJson = Encrypted($finalJson);
         fwrite($myfile, $finalJson);
         fclose($myfile);
 
