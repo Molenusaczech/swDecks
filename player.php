@@ -266,7 +266,11 @@ $weapon5 = $temp2[0];
 
 <style>
 
-* { box-sizing: border-box; }
+* { box-sizing: border-box; 
+    padding: 0;
+    margin: 0;
+
+}
 body {
   font: 16px Arial;
 }
@@ -321,13 +325,47 @@ form {
   padding: 5px;
 }
 
+header {
+  background-color: #f1f1f1;
+  padding: 20px;
+  min-height: 100px;
+}
+
 </style>
 
 
 </head>
 <body>
     <script type="text/javascript" src="autocomplete.js"></script>
-    Player: <?php echo $_COOKIE["login"]?> <br>
+
+    <header> 
+      <h1>Odevzdání balíčku</h1> 
+      Přihlášen jako: <?php echo $_COOKIE["login"]?> <br>
+
+      Organizátor:
+      <?php 
+      
+      $json_data = file_get_contents('data/tournaments.json');
+    $json_data = Decrypted($json_data);
+    $decoded = json_decode($json_data, true);
+    $org = $decoded[$_GET["tid"]]["organizer"];
+    $limit = $decoded[$_GET["tid"]]["limit"];
+    $org = substr($org, 0, -5);
+
+    echo $org;
+      
+      ?> <br> Omezení: <?php 
+      
+      $json_data = file_get_contents('limits.json');
+      $decoded = json_decode($json_data, true);
+      $limit = $decoded[$limit]["name"];
+      echo $limit;
+      
+      ?>
+  
+  </header>
+
+    
 
 
     <?php 
