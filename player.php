@@ -31,7 +31,7 @@ function apiGet($url) {
   $resp = curl_exec($curl);
   curl_close($curl);
   $decoded = json_decode($resp);
-  return Decrypted($decoded);
+  return $decoded;
   
 }
 
