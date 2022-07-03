@@ -105,7 +105,7 @@ table, th, td {
 
         foreach ($players as $index1) {
             echo "<tr>";
-            for ($x = 0; $x <= 6; $x++) {
+            for ($x = 0; $x <= 7; $x++) {
                 if ($index1[$x] !== "") {
                     echo "<td>$index1[$x]</td>"; 
                 }
